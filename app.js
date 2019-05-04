@@ -16,8 +16,9 @@ app.get('/', (req, res) => {
 
 // Shows the full list of books
 app.get('/books', (req, res) => {
-    Book.findAll({order: [["title", "DESC"]]}).then(function(books) { //gets all articles for main page and orders them 
+    Book.findAll({order: [["title", "DESC"]]}).then(function(books) { //gets all books for main page and orders them 
     res.render("index", {books: books, title: "Book List" });
+    console.log(books.length);
   }).catch(function(err) {
     res.send(500);
   });
@@ -35,7 +36,7 @@ app.post('/books', (req, res) => {
   }).catch(function(err) {
     if(err.name === "SequelizeValidationError") { 
       res.render("book/new", {
-        article: Book.build(req.body), //adds already entered info
+        book: Book.build(req.body), //adds already entered info
         title: "New Book",
         errors: err.errors //errors array in err, gets added in new --> error view. Before empty so not there
       });
@@ -91,8 +92,8 @@ app.put('/books/:id', (req, res) => {
 
 
 // Deletes a book. Careful, this can’t be undone. It can be helpful to create a new “test” book to test deleting
-app.delete('/books/:id/delete', (req, res) => { 
-	Book.findByPk(req.params.id).then(function(book) { //replaces findById. Method of Article class
+app.delete('/books/:id', (req, res) => { 
+	Book.findByPk(req.params.id).then(function(book) { //replaces findById. Method of Book class
     if(book) {
       return book.destroy();
     } else {
