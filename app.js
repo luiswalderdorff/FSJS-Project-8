@@ -46,7 +46,7 @@ app.post('/books/new', (req, res) => {
   }).catch(function(err) {
     res.render("error", { error: err });
     console.log(err);
-  });
+  })
 });
 
 
