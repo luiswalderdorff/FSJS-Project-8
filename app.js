@@ -16,11 +16,11 @@ app.get('/', (req, res) => {
 
 // Shows the full list of books
 app.get('/books', (req, res) => {
-    Book.findAll({order: [["title", "DESC"]]}).then(function(books) { //gets all books for main page and orders them 
+    Book.findAll({order: [["title", "ASC"]]}).then(function(books) { //gets all books for main page and orders them 
     res.render("index", {books: books, title: "Book List" });
-    console.log(books.length);
   }).catch(function(err) {
-    res.send(500);
+    res.render("error", { error: err });
+    console.log(err);
   });
 });
 
@@ -30,7 +30,7 @@ app.get('/books/new', (req, res) => {
 });
 
 // Posts a new book to the database
-app.post('/books', (req, res) => {
+app.post('/books/new', (req, res) => {
     Book.create(req.body).then(function(book) { 
     res.redirect("/books/" + book.id); 
   }).catch(function(err) {
@@ -44,7 +44,8 @@ app.post('/books', (req, res) => {
       throw err; //handled by the final catch
     }
   }).catch(function(err) {
-    res.send(500);
+    res.render("error", { error: err });
+    console.log(err);
   });
 });
 
@@ -58,13 +59,14 @@ app.get('/books/:id', (req, res) => {
       res.send(404);
     }
   }).catch(function(err) {
-    res.send(500);
+    res.render("error", { error: err });
+    console.log(err);
   });   
 });
 
 
 // Updates book info in the database
-app.put('/books/:id', (req, res) => {
+app.post('/books/:id', (req, res) => {
 	Book.findByPk(req.params.id).then(function(book) { 
     if(book) {
       return book.update(req.body);//updates book
@@ -86,7 +88,8 @@ app.put('/books/:id', (req, res) => {
       throw err; //handled by the final catch
     }
   }).catch(function(err) {
-    res.send(500);
+    res.render("error", { error: err });
+    console.log(err);
   });  
 });
 
@@ -102,14 +105,28 @@ app.delete('/books/:id', (req, res) => {
   }).then(function() {
     res.redirect("/books");
   }).catch(function(err) {
-    res.send(500);
+    res.render("error", { error: err });
+    console.log(err);
   }); 
+});
+
+// No page reached
+app.use((req, res, next) => { //creates error
+  const err = new Error("Whoops! This page does not exist.");
+  err.status = 404;
+  next(err);
+});
+
+app.use((err, req, res, next) => { //displays serror
+  res.status(err.status);
+  res.render("page-not-found", { error: err });
+  console.log(err);
+  next(err);
 });
 
 sequelize.sync().then(function () {
   app.listen(3000, () => {
     console.log('The application is running on localhost:3000!');
-    console.log(Book);
 });
 })
 

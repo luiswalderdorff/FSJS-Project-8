@@ -8,7 +8,7 @@ block content
       each error in errors
         li
           =error.message
-  form(action="/books/" + book.id + "?_method=PUT", method="post")
+  form(action="/books/" + book.id, method="post")
     p
       label(for='title') Title
       input#title(name='title', type='text', value=book.title)
@@ -23,7 +23,7 @@ block content
       input#year(name='year', type='text', value=book.year)
     p
       input(type='submit', value='Update Book')
-  form(action="/books/" + book.id + "?_method=DELETE", method="post", onsubmit="return confirm('Do you really want to delete this book?');")
+  form(action="/books/" + book.id, method="delete", onsubmit="return confirm('Do you really want to delete this book?');")
     p
       a.button(href='/books') Cancel
     p
