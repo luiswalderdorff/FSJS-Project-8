@@ -2,6 +2,12 @@ extends layout
 
 block content
   h1 New Book
+  if(errors)
+    h2.error Ooops an error occured!
+    ul.error
+      each error in errors
+        li
+          =error.message
   form(action="/books/new", method="post")
     p
       label(for='title') Title
@@ -14,7 +20,7 @@ block content
       input#genre(type="text", name="genre" value=book.genre)
     p
       label(for='year') Year
-      input#year(type="integer", name="title" value=book.year)
+      input#year(type="integer", name="year" value=book.year)
     p
       input(type='submit', value='Create New Book')
     p

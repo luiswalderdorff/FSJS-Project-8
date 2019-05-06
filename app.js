@@ -8,6 +8,10 @@ app.use("/static", express.static("public"));
 
 app.set('view engine', 'pug');
 
+// Makes me able to parse data from body (for req.body)
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 // Home route, redirects to /books
 app.get('/', (req, res) => {
   res.redirect("/books");
@@ -35,7 +39,7 @@ app.post('/books/new', (req, res) => {
     res.redirect("/books/" + book.id); 
   }).catch(function(err) {
     if(err.name === "SequelizeValidationError") { 
-      res.render("book/new", {
+      res.render("new-book", {
         book: Book.build(req.body), //adds already entered info
         title: "New Book",
         errors: err.errors //errors array in err, gets added in new --> error view. Before empty so not there
@@ -95,7 +99,7 @@ app.post('/books/:id', (req, res) => {
 
 
 // Deletes a book. Careful, this can’t be undone. It can be helpful to create a new “test” book to test deleting
-app.delete('/books/:id', (req, res) => { 
+app.post('/books/delete/:id', (req, res) => { 
 	Book.findByPk(req.params.id).then(function(book) { //replaces findById. Method of Book class
     if(book) {
       return book.destroy();
