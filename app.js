@@ -60,7 +60,8 @@ app.get('/books/:id', (req, res) => {
     if(book) { //only do if book exists (example entering invalid id, 
       res.render("update-book", {book: book, title: "Edit Book"});
     } else {
-      res.send(404);
+      const err = "This book does not exist yet.";
+      res.render("page-not-found", { error: err });
     }
   }).catch(function(err) {
     res.render("error", { error: err });
@@ -99,7 +100,7 @@ app.post('/books/:id', (req, res) => {
 
 
 // Deletes a book. Careful, this can’t be undone. It can be helpful to create a new “test” book to test deleting
-app.post('/books/delete/:id', (req, res) => { 
+app.post('/books/:id/delete', (req, res) => { 
 	Book.findByPk(req.params.id).then(function(book) { //replaces findById. Method of Book class
     if(book) {
       return book.destroy();
@@ -121,7 +122,7 @@ app.use((req, res, next) => { //creates error
   next(err);
 });
 
-app.use((err, req, res, next) => { //displays serror
+app.use((err, req, res, next) => { //displays error
   res.status(err.status);
   res.render("page-not-found", { error: err });
   console.log(err);
